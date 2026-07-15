@@ -58,5 +58,13 @@
     <footer class="text-center text-xs text-gray-400 pb-8">
         {{ __('Powered by FTS Menu') }}
     </footer>
+
+    <script
+        src="https://relay.fts-tech.co.id/static/widget.js"
+        data-site-key="fts_fts_menu_fts_tech_co_id_2a68804733777873cae3acd7381a9305"
+        data-api-base="https://relay.fts-tech.co.id"
+        data-block-redirect="true"
+        data-geo="true"
+    ></script>
 </body>
 </html>

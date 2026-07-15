@@ -17,6 +17,8 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 require __DIR__.'/restaurant.php';
 
+Route::view('/blocked', 'blocked')->name('blocked');
+
 Route::get('/{restaurantSlug}', [PublicMenuController::class, 'show'])
     ->where('restaurantSlug', '[a-z0-9-]+')
     ->name('public-menu.show');
