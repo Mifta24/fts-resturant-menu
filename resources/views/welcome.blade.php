@@ -107,48 +107,71 @@
                     </div>
 
                     {{-- Illustrative phone mockup --}}
-                    <div class="flex justify-center lg:justify-end">
-                        <div class="w-full max-w-[300px] rounded-container border border-mist bg-snow-gray p-3 shadow-ambient">
-                            <div class="rounded-card bg-pure-white p-4">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-heading-sm font-semibold text-ink">Kopi Senja</p>
-                                        <p class="text-caption text-smoke">Kafe &amp; Resto</p>
-                                    </div>
-                                    <span class="inline-flex items-center rounded-pill bg-vivid-green/10 px-3 py-1 text-caption font-medium text-vivid-green">Buka</span>
+                    <div class="relative flex justify-center lg:justify-end">
+                        <div class="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-flame/10 blur-3xl lg:left-auto lg:right-4 lg:translate-x-0"></div>
+
+                        <div class="relative w-full max-w-[320px] rounded-[40px] border border-charcoal bg-ink p-2 shadow-ambient">
+                            <div class="overflow-hidden rounded-[32px] bg-snow-gray">
+                                <div class="relative h-28 bg-amber-flame">
+                                    <div class="absolute left-1/2 top-2 h-5 w-20 -translate-x-1/2 rounded-pill bg-ink"></div>
+                                    <span class="absolute right-4 top-4 rounded-pill bg-pure-white/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-smoke">
+                                        Contoh menu
+                                    </span>
                                 </div>
 
-                                <div class="mt-4 flex gap-2">
-                                    <span class="rounded-pill bg-signal-blue px-3 py-1 text-caption font-medium text-white">Semua</span>
-                                    <span class="rounded-pill border border-silver px-3 py-1 text-caption text-smoke">Makanan</span>
-                                    <span class="rounded-pill border border-silver px-3 py-1 text-caption text-smoke">Minuman</span>
+                                <div class="relative -mt-7 px-3">
+                                    <div class="flex items-center gap-3 rounded-card bg-pure-white p-3 shadow-sm">
+                                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-pure-white bg-amber-flame text-lg font-bold text-white shadow-sm">
+                                            KS
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="truncate text-body font-semibold text-ink">Kopi Senja</p>
+                                            <p class="mt-0.5 line-clamp-2 text-xs leading-4 text-smoke">Kopi lokal, makanan hangat, dan suasana nyaman.</p>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="mt-4 space-y-3">
-                                    <div class="flex items-center gap-3 rounded-card border border-mist p-3">
-                                        <div class="h-12 w-12 shrink-0 rounded-lg bg-amber-flame"></div>
-                                        <div class="flex-1">
-                                            <p class="text-body font-medium text-ink">Nasi Goreng Senja</p>
-                                            <p class="text-caption text-smoke">Rp28.000</p>
+                                <div class="mt-3 flex gap-2 overflow-hidden px-3">
+                                    <span class="whitespace-nowrap rounded-pill bg-signal-blue px-3 py-1.5 text-xs font-semibold text-white">Semua</span>
+                                    <span class="whitespace-nowrap rounded-pill border border-silver bg-pure-white px-3 py-1.5 text-xs font-medium text-smoke">Makanan</span>
+                                    <span class="whitespace-nowrap rounded-pill border border-silver bg-pure-white px-3 py-1.5 text-xs font-medium text-smoke">Minuman</span>
+                                </div>
+
+                                <div class="px-3 pb-3 pt-4">
+                                    <p class="mb-2 text-sm font-semibold text-ink">Menu populer</p>
+                                    <div class="space-y-2.5">
+                                        <div class="flex gap-3 rounded-xl bg-pure-white p-2.5 shadow-sm">
+                                            <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&amp;fit=crop&amp;w=160&amp;q=80" alt="Nasi Goreng Senja" class="h-14 w-14 shrink-0 rounded-lg object-cover" loading="lazy">
+                                            <div class="min-w-0 flex-1 py-0.5">
+                                                <p class="truncate text-sm font-medium text-ink">Nasi Goreng Senja</p>
+                                                <p class="mt-0.5 truncate text-[11px] text-smoke">Telur, ayam suwir, dan kerupuk</p>
+                                                <p class="mt-1 text-xs font-semibold text-ink">Rp28.000</p>
+                                            </div>
                                         </div>
-                                        <span class="inline-flex h-2.5 w-2.5 rounded-full bg-vivid-green"></span>
-                                    </div>
-                                    <div class="flex items-center gap-3 rounded-card border border-mist p-3">
-                                        <div class="h-12 w-12 shrink-0 rounded-lg bg-snow-gray"></div>
-                                        <div class="flex-1">
-                                            <p class="text-body font-medium text-ink">Es Kopi Gula Aren</p>
-                                            <p class="text-caption text-smoke">Rp18.000</p>
+
+                                        <div class="flex gap-3 rounded-xl bg-pure-white p-2.5 shadow-sm">
+                                            <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&amp;fit=crop&amp;w=160&amp;q=80" alt="Es Kopi Gula Aren" class="h-14 w-14 shrink-0 rounded-lg object-cover" loading="lazy">
+                                            <div class="min-w-0 flex-1 py-0.5">
+                                                <p class="truncate text-sm font-medium text-ink">Es Kopi Gula Aren</p>
+                                                <p class="mt-0.5 truncate text-[11px] text-smoke">Kopi susu dengan gula aren asli</p>
+                                                <p class="mt-1 text-xs font-semibold text-ink">Rp18.000</p>
+                                            </div>
                                         </div>
-                                        <span class="inline-flex h-2.5 w-2.5 rounded-full bg-vivid-green"></span>
-                                    </div>
-                                    <div class="flex items-center gap-3 rounded-card border border-mist p-3 opacity-50">
-                                        <div class="h-12 w-12 shrink-0 rounded-lg bg-snow-gray"></div>
-                                        <div class="flex-1">
-                                            <p class="text-body font-medium text-ink">Sate Ayam</p>
-                                            <p class="text-caption text-smoke">Rp25.000</p>
+
+                                        <div class="flex gap-3 rounded-xl bg-pure-white p-2.5 opacity-60 shadow-sm">
+                                            <img src="https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&amp;fit=crop&amp;w=160&amp;q=80" alt="Sate Ayam" class="h-14 w-14 shrink-0 rounded-lg object-cover grayscale-[30%]" loading="lazy">
+                                            <div class="min-w-0 flex-1 py-0.5">
+                                                <div class="flex items-start justify-between gap-2">
+                                                    <p class="truncate text-sm font-medium text-ink">Sate Ayam</p>
+                                                    <span class="shrink-0 rounded-pill bg-mist px-2 py-0.5 text-[9px] font-semibold text-smoke">Habis</span>
+                                                </div>
+                                                <p class="mt-0.5 truncate text-[11px] text-smoke">Bumbu kacang dan lontong</p>
+                                                <p class="mt-1 text-xs font-semibold text-ink">Rp25.000</p>
+                                            </div>
                                         </div>
-                                        <span class="inline-flex h-2.5 w-2.5 rounded-full bg-alert-red"></span>
                                     </div>
+
+                                    <p class="pt-3 text-center text-[10px] text-pewter">Powered by Fujiyama Technology Solutions</p>
                                 </div>
                             </div>
                         </div>
@@ -358,7 +381,7 @@
                         </span>
                         <span class="font-medium text-smoke">FTS Menu</span>
                     </div>
-                    <p>&copy; {{ date('Y') }} FTS Menu. Semua hak cipta dilindungi.</p>
+                    <p>&copy; {{ date('Y') }} Fujiyama Technology Solutions. Semua hak cipta dilindungi.</p>
                 </div>
             </footer>
         </div>
