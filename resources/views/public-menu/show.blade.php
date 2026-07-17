@@ -56,7 +56,7 @@
     @endif
 
     <footer class="text-center text-xs text-gray-400 pb-8">
-        {{ __('Powered by FTS Menu') }}
+        {{ __('Powered by Fujiyama Technology Solutions') }}
     </footer>
 
     <script
