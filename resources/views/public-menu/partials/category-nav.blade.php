@@ -1,7 +1,13 @@
-<nav class="sticky top-0 bg-gray-50/95 backdrop-blur border-b border-gray-200 mt-4 py-2">
-    <div class="max-w-2xl mx-auto px-4 flex gap-2 overflow-x-auto no-scrollbar">
+<nav class="sticky top-0 z-30 mt-5 border-y border-mist bg-pure-white/90 py-3 shadow-sm backdrop-blur">
+    <div class="no-scrollbar mx-auto flex max-w-3xl gap-2 overflow-x-auto px-4 sm:px-6">
         @foreach ($categories as $category)
-            <a href="#category-{{ $category->id }}" class="whitespace-nowrap text-sm font-medium px-3 py-1.5 rounded-full bg-white border border-gray-200 text-gray-700">
+            <a
+                href="#category-{{ $category->id }}"
+                @click="activeCategory = {{ $category->id }}"
+                :class="activeCategory === {{ $category->id }} ? 'border-transparent text-white shadow-sm' : 'border-silver bg-pure-white text-smoke hover:border-ink hover:text-ink'"
+                :style="activeCategory === {{ $category->id }} ? 'background-color: var(--brand-color)' : ''"
+                class="whitespace-nowrap rounded-pill border px-4 py-2 text-sm font-semibold transition"
+            >
                 {{ $category->name }}
             </a>
         @endforeach
