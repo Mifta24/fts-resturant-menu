@@ -43,6 +43,12 @@
                             <x-input-error :messages="$errors->get('image')" class="mt-2" />
                         </div>
                         <div class="sm:col-span-2">
+                            <x-input-label for="image_url" :value="__('Atau URL Foto')" />
+                            <x-text-input id="image_url" name="image_url" type="url" class="mt-1 block w-full" :value="old('image_url')" placeholder="https://contoh.com/foto-menu.jpg" />
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Jika file dan URL diisi, file yang diunggah akan digunakan.') }}</p>
+                            <x-input-error :messages="$errors->get('image_url')" class="mt-2" />
+                        </div>
+                        <div class="sm:col-span-2">
                             <x-input-label for="description" :value="__('Deskripsi')" />
                             <textarea id="description" name="description" rows="2" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm"></textarea>
                             <x-input-error :messages="$errors->get('description')" class="mt-2" />
@@ -56,8 +62,8 @@
                 <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg divide-y divide-gray-100 dark:divide-gray-700">
                     @forelse ($menuItems as $item)
                         <div class="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
-                            @if ($item->image_path)
-                                <img src="{{ Storage::url($item->image_path) }}" class="h-16 w-16 rounded object-cover shrink-0">
+                            @if ($item->image_source)
+                                <img src="{{ $item->image_source }}" alt="{{ $item->name }}" class="h-16 w-16 rounded object-cover shrink-0">
                             @else
                                 <div class="h-16 w-16 rounded bg-gray-100 dark:bg-gray-700 shrink-0"></div>
                             @endif

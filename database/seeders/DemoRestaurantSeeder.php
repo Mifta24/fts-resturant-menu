@@ -28,13 +28,13 @@ class DemoRestaurantSeeder extends Seeder
             description: 'Warung makan rumahan dengan menu harian khas Nusantara.',
             categories: [
                 'Makanan Utama' => [
-                    ['name' => 'Nasi Goreng Spesial', 'price' => 25000, 'description' => 'Nasi goreng dengan telur, ayam suwir, dan kerupuk.'],
-                    ['name' => 'Ayam Bakar', 'price' => 28000, 'description' => 'Ayam bakar bumbu kecap dengan lalapan.'],
-                    ['name' => 'Soto Ayam', 'price' => 22000, 'description' => 'Soto ayam kuah bening dengan suwiran ayam.'],
+                    ['name' => 'Nasi Goreng Spesial', 'price' => 25000, 'description' => 'Nasi goreng dengan telur, ayam suwir, dan kerupuk.', 'image_url' => 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=800&q=80'],
+                    ['name' => 'Ayam Bakar', 'price' => 28000, 'description' => 'Ayam bakar bumbu kecap dengan lalapan.', 'image_url' => 'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=800&q=80'],
+                    ['name' => 'Soto Ayam', 'price' => 22000, 'description' => 'Soto ayam kuah bening dengan suwiran ayam.', 'image_url' => 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80'],
                 ],
                 'Minuman' => [
-                    ['name' => 'Es Teh Manis', 'price' => 6000, 'description' => null],
-                    ['name' => 'Es Jeruk', 'price' => 8000, 'description' => null],
+                    ['name' => 'Es Teh Manis', 'price' => 6000, 'description' => null, 'image_url' => 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80'],
+                    ['name' => 'Es Jeruk', 'price' => 8000, 'description' => null, 'image_url' => 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=800&q=80'],
                 ],
             ]
         );
@@ -46,12 +46,12 @@ class DemoRestaurantSeeder extends Seeder
             description: 'Kedai kopi santai dengan pilihan kopi lokal dan camilan.',
             categories: [
                 'Kopi' => [
-                    ['name' => 'Kopi Tubruk', 'price' => 15000, 'description' => 'Kopi hitam khas Nusantara.'],
-                    ['name' => 'Es Kopi Susu Gula Aren', 'price' => 20000, 'description' => 'Kopi susu dengan gula aren asli.'],
+                    ['name' => 'Kopi Tubruk', 'price' => 15000, 'description' => 'Kopi hitam khas Nusantara.', 'image_url' => 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80'],
+                    ['name' => 'Es Kopi Susu Gula Aren', 'price' => 20000, 'description' => 'Kopi susu dengan gula aren asli.', 'image_url' => 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=800&q=80'],
                 ],
                 'Camilan' => [
-                    ['name' => 'Pisang Goreng', 'price' => 12000, 'description' => 'Pisang goreng crispy dengan topping cokelat.'],
-                    ['name' => 'Roti Bakar', 'price' => 15000, 'description' => 'Roti bakar dengan pilihan selai.'],
+                    ['name' => 'Pisang Goreng', 'price' => 12000, 'description' => 'Pisang goreng crispy dengan topping cokelat.', 'image_url' => 'https://images.unsplash.com/photo-1603833665858-e61d17a86224?auto=format&fit=crop&w=800&q=80'],
+                    ['name' => 'Roti Bakar', 'price' => 15000, 'description' => 'Roti bakar dengan pilihan selai.', 'image_url' => 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80'],
                 ],
             ]
         );
@@ -75,39 +75,46 @@ class DemoRestaurantSeeder extends Seeder
             ]
         );
 
-        if (Restaurant::where('name', $restaurantName)->exists()) {
-            return;
-        }
+        $restaurant = Restaurant::firstOrCreate(
+            ['name' => $restaurantName],
+            [
+                'slug' => Restaurant::generateUniqueSlug($restaurantName),
+                'description' => $description,
+                'whatsapp' => '6281234567890',
+                'address' => 'Jl. Contoh No. 1, Jakarta',
+                'public_status' => 'published',
+            ]
+        );
 
-        $restaurant = Restaurant::create([
-            'name' => $restaurantName,
-            'slug' => Restaurant::generateUniqueSlug($restaurantName),
-            'description' => $description,
-            'whatsapp' => '6281234567890',
-            'address' => 'Jl. Contoh No. 1, Jakarta',
-            'public_status' => 'published',
+        $restaurant->users()->syncWithoutDetaching([
+            $owner->id => ['role' => 'owner', 'status' => 'active'],
         ]);
-
-        $restaurant->users()->attach($owner->id, ['role' => 'owner', 'status' => 'active']);
 
         $categorySort = 0;
         foreach ($categories as $categoryName => $menuItems) {
-            $category = $restaurant->categories()->create([
-                'name' => $categoryName,
-                'sort_order' => $categorySort++,
-                'is_active' => true,
-            ]);
+            $category = $restaurant->categories()->updateOrCreate(
+                ['name' => $categoryName],
+                [
+                    'sort_order' => $categorySort++,
+                    'is_active' => true,
+                ]
+            );
 
             $menuSort = 0;
             foreach ($menuItems as $item) {
-                $restaurant->menuItems()->create([
-                    'category_id' => $category->id,
-                    'name' => $item['name'],
-                    'description' => $item['description'] ?? null,
-                    'price' => $item['price'],
-                    'is_available' => true,
-                    'sort_order' => $menuSort++,
-                ]);
+                $restaurant->menuItems()->updateOrCreate(
+                    [
+                        'category_id' => $category->id,
+                        'name' => $item['name'],
+                    ],
+                    [
+                        'description' => $item['description'] ?? null,
+                        'price' => $item['price'],
+                        'image_url' => $item['image_url'] ?? null,
+                        'is_available' => true,
+                        'sort_order' => $menuSort++,
+                    ]
+                );
             }
         }
     }

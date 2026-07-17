@@ -1,6 +1,6 @@
 <div class="flex gap-3 bg-white rounded-lg shadow-sm p-3 {{ ! $item->is_available ? 'opacity-60' : '' }}">
-    @if ($item->image_path)
-        <img src="{{ Storage::url($item->image_path) }}" alt="{{ $item->name }}" class="h-16 w-16 rounded object-cover shrink-0">
+    @if ($item->image_source)
+        <img src="{{ $item->image_source }}" alt="{{ $item->name }}" class="h-16 w-16 rounded object-cover shrink-0">
     @else
         <div class="h-16 w-16 rounded bg-gray-100 shrink-0"></div>
     @endif

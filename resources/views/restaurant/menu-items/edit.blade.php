@@ -33,11 +33,17 @@
                     </div>
                     <div>
                         <x-input-label for="image" :value="__('Foto Baru (opsional)')" />
-                        @if ($menuItem->image_path)
-                            <img src="{{ Storage::url($menuItem->image_path) }}" class="h-12 w-12 rounded object-cover mt-1 mb-1">
+                        @if ($menuItem->image_source)
+                            <img src="{{ $menuItem->image_source }}" alt="{{ $menuItem->name }}" class="h-12 w-12 rounded object-cover mt-1 mb-1">
                         @endif
                         <input id="image" name="image" type="file" accept="image/*" class="mt-1 block w-full text-sm text-gray-600 dark:text-gray-400">
                         <x-input-error :messages="$errors->get('image')" class="mt-2" />
+                    </div>
+                    <div class="sm:col-span-2">
+                        <x-input-label for="image_url" :value="__('Atau URL Foto')" />
+                        <x-text-input id="image_url" name="image_url" type="url" class="mt-1 block w-full" :value="old('image_url', $menuItem->image_url)" placeholder="https://contoh.com/foto-menu.jpg" />
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Kosongkan URL untuk menghapus foto dari URL. Jika memilih file baru, file tersebut akan digunakan.') }}</p>
+                        <x-input-error :messages="$errors->get('image_url')" class="mt-2" />
                     </div>
                     <div class="sm:col-span-2">
                         <x-input-label for="description" :value="__('Deskripsi')" />

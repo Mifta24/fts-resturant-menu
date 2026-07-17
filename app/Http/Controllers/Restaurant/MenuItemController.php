@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\ResolvesCurrentRestaurant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMenuItemRequest;
 use App\Http\Requests\UpdateMenuItemRequest;
+use App\Models\Category;
 use App\Models\MenuItem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,10 +33,14 @@ class MenuItemController extends Controller
         $restaurant = $this->currentRestaurant($request);
         $this->ensureCategoryBelongsToRestaurant($restaurant->id, (int) $request->validated('category_id'));
 
-        $data = $request->safe()->except(['image']);
+        $data = $request->safe()->except(['image', 'image_url']);
 
         if ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store("restaurants/{$restaurant->id}/menu-items", 'public');
+            $data['image_url'] = null;
+        } elseif ($request->filled('image_url')) {
+            $data['image_path'] = null;
+            $data['image_url'] = $request->validated('image_url');
         }
 
         $restaurant->menuItems()->create([
@@ -66,13 +71,18 @@ class MenuItemController extends Controller
         abort_unless($menuItem->restaurant_id === $restaurant->id, 404);
         $this->ensureCategoryBelongsToRestaurant($restaurant->id, (int) $request->validated('category_id'));
 
-        $data = $request->safe()->except(['image']);
+        $data = $request->safe()->except(['image', 'image_url']);
 
         if ($request->hasFile('image')) {
-            if ($menuItem->image_path) {
-                Storage::disk('public')->delete($menuItem->image_path);
-            }
+            $this->deleteStoredImage($menuItem);
             $data['image_path'] = $request->file('image')->store("restaurants/{$restaurant->id}/menu-items", 'public');
+            $data['image_url'] = null;
+        } elseif ($request->filled('image_url')) {
+            $this->deleteStoredImage($menuItem);
+            $data['image_path'] = null;
+            $data['image_url'] = $request->validated('image_url');
+        } elseif ($request->exists('image_url') && $menuItem->image_url) {
+            $data['image_url'] = null;
         }
 
         $menuItem->update($data);
@@ -86,9 +96,7 @@ class MenuItemController extends Controller
         $this->authorize('delete', $menuItem);
         abort_unless($menuItem->restaurant_id === $restaurant->id, 404);
 
-        if ($menuItem->image_path) {
-            Storage::disk('public')->delete($menuItem->image_path);
-        }
+        $this->deleteStoredImage($menuItem);
 
         $menuItem->delete();
 
@@ -109,9 +117,16 @@ class MenuItemController extends Controller
     private function ensureCategoryBelongsToRestaurant(int $restaurantId, int $categoryId): void
     {
         abort_unless(
-            \App\Models\Category::where('id', $categoryId)->where('restaurant_id', $restaurantId)->exists(),
+            Category::where('id', $categoryId)->where('restaurant_id', $restaurantId)->exists(),
             422,
             'Invalid category for this restaurant.'
         );
+    }
+
+    private function deleteStoredImage(MenuItem $menuItem): void
+    {
+        if ($menuItem->image_path) {
+            Storage::disk('public')->delete($menuItem->image_path);
+        }
     }
 }

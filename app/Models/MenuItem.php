@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 #[Fillable([
     'category_id',
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'description',
     'price',
     'image_path',
+    'image_url',
     'is_available',
     'is_featured',
     'sort_order',
@@ -40,5 +42,14 @@ class MenuItem extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function getImageSourceAttribute(): ?string
+    {
+        if ($this->image_url) {
+            return $this->image_url;
+        }
+
+        return $this->image_path ? Storage::url($this->image_path) : null;
     }
 }
