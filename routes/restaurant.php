@@ -3,11 +3,17 @@
 use App\Http\Controllers\Restaurant\CategoryController;
 use App\Http\Controllers\Restaurant\DashboardController;
 use App\Http\Controllers\Restaurant\MenuItemController;
+use App\Http\Controllers\Restaurant\OnboardingController;
 use App\Http\Controllers\Restaurant\QrCodeController;
 use App\Http\Controllers\Restaurant\RestaurantProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->prefix('dashboard')->name('dashboard.')->group(function () {
+Route::middleware(['auth', 'verified'])->prefix('dashboard')->name('dashboard.')->group(function () {
+    Route::get('/onboarding', [OnboardingController::class, 'create'])->name('onboarding.create');
+    Route::post('/onboarding', [OnboardingController::class, 'store'])->name('onboarding.store');
+});
+
+Route::middleware(['auth', 'verified', 'restaurant.onboarded'])->prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
 
     Route::get('/profile', [RestaurantProfileController::class, 'edit'])->name('profile.edit');
