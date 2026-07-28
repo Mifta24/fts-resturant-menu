@@ -136,12 +136,14 @@
             </main>
         @endif
 
-        <footer class="border-t border-mist bg-pure-white px-4 py-8 text-center">
-            <a href="/" class="inline-flex items-center gap-2 text-xs font-medium text-smoke transition hover:text-ink">
-                <span>{{ __('Powered by') }}</span>
-                <span class="font-bold text-ink">Fujiyama Technology Solutions</span>
-            </a>
-        </footer>
+        @unless ($restaurant->hidesBranding())
+            <footer class="border-t border-mist bg-pure-white px-4 py-8 text-center">
+                <a href="/" class="inline-flex items-center gap-2 text-xs font-medium text-smoke transition hover:text-ink">
+                    <span>{{ __('Powered by') }}</span>
+                    <span class="font-bold text-ink">Fujiyama Technology Solutions</span>
+                </a>
+            </footer>
+        @endunless
     </div>
 
     <script
