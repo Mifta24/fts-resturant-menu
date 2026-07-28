@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Package;
 use App\Models\Restaurant;
+use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -89,6 +91,15 @@ class DemoRestaurantSeeder extends Seeder
         $restaurant->users()->syncWithoutDetaching([
             $owner->id => ['role' => 'owner', 'status' => 'active'],
         ]);
+
+        if (! $restaurant->activeSubscription && ($freePackage = Package::free())) {
+            $restaurant->subscriptions()->create([
+                'package_id' => $freePackage->id,
+                'billing_cycle' => 'monthly',
+                'status' => Subscription::STATUS_ACTIVE,
+                'starts_at' => now(),
+            ]);
+        }
 
         $categorySort = 0;
         foreach ($categories as $categoryName => $menuItems) {

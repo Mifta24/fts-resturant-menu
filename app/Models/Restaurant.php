@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -47,6 +48,42 @@ class Restaurant extends Model
     public function menuItems(): HasMany
     {
         return $this->hasMany(MenuItem::class);
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function activeSubscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class)->ofMany(
+            ['id' => 'max'],
+            fn ($query) => $query->where('status', Subscription::STATUS_ACTIVE)
+        );
+    }
+
+    public function pendingSubscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class)->ofMany(
+            ['id' => 'max'],
+            fn ($query) => $query->where('status', Subscription::STATUS_PENDING)
+        );
+    }
+
+    public function currentPackage(): ?Package
+    {
+        return $this->activeSubscription?->package;
+    }
+
+    public function hidesBranding(): bool
+    {
+        return $this->currentPackage()?->remove_branding ?? false;
     }
 
     public function isPublished(): bool
