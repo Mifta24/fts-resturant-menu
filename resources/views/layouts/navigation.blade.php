@@ -27,6 +27,14 @@
                     <x-nav-link :href="route('dashboard.qr-code.show')" :active="request()->routeIs('dashboard.qr-code.*')">
                         {{ __('QR Code') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('dashboard.subscription.show')" :active="request()->routeIs('dashboard.subscription.*')">
+                        {{ __('Langganan') }}
+                    </x-nav-link>
+                    @if (Auth::user()->is_super_admin)
+                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                            {{ __('Admin') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 

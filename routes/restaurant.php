@@ -6,6 +6,7 @@ use App\Http\Controllers\Restaurant\MenuItemController;
 use App\Http\Controllers\Restaurant\OnboardingController;
 use App\Http\Controllers\Restaurant\QrCodeController;
 use App\Http\Controllers\Restaurant\RestaurantProfileController;
+use App\Http\Controllers\Restaurant\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->prefix('dashboard')->name('dashboard.')->group(function () {
@@ -34,4 +35,9 @@ Route::middleware(['auth', 'verified', 'restaurant.onboarded'])->prefix('dashboa
 
     Route::get('/qr-code', [QrCodeController::class, 'show'])->name('qr-code.show');
     Route::get('/qr-code/download', [QrCodeController::class, 'download'])->name('qr-code.download');
+
+    Route::get('/subscription', [SubscriptionController::class, 'show'])->name('subscription.show');
+    Route::post('/subscription/select-package', [SubscriptionController::class, 'selectPackage'])->name('subscription.select-package');
+    Route::post('/subscription/upload-payment', [SubscriptionController::class, 'uploadPayment'])->name('subscription.upload-payment');
+    Route::get('/subscription/payments/{payment}/proof', [SubscriptionController::class, 'downloadProof'])->name('subscription.payments.proof');
 });
