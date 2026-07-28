@@ -23,8 +23,8 @@ class UpdateRestaurantProfileRequest extends FormRequest
             'address' => ['nullable', 'string', 'max:1000'],
             'primary_color' => ['nullable', 'string', 'max:20'],
             'public_status' => ['required', 'in:draft,published,inactive'],
-            'logo' => ['nullable', 'image', 'max:2048'],
-            'cover' => ['nullable', 'image', 'max:4096'],
+            'logo' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
+            'cover' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
         ];
     }
 }

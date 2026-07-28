@@ -8,6 +8,9 @@ use App\Http\Requests\StoreMenuItemRequest;
 use App\Http\Requests\UpdateMenuItemRequest;
 use App\Models\Category;
 use App\Models\MenuItem;
+use App\Services\ImageProcessingService;
+use App\Services\PlanLimitService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -16,6 +19,11 @@ use Illuminate\View\View;
 class MenuItemController extends Controller
 {
     use ResolvesCurrentRestaurant;
+
+    public function __construct(
+        private PlanLimitService $planLimitService,
+        private ImageProcessingService $imageProcessingService,
+    ) {}
 
     public function index(Request $request): View
     {
@@ -28,15 +36,27 @@ class MenuItemController extends Controller
         ]);
     }
 
-    public function store(StoreMenuItemRequest $request): RedirectResponse
+    public function store(StoreMenuItemRequest $request): RedirectResponse|JsonResponse
     {
         $restaurant = $this->currentRestaurant($request);
         $this->ensureCategoryBelongsToRestaurant($restaurant->id, (int) $request->validated('category_id'));
 
+        if (! $this->planLimitService->canCreateMenuItem($restaurant)) {
+            return $this->planLimitService->limitReachedResponse($request, 'Batas jumlah menu pada paket Anda sudah tercapai.');
+        }
+
+        if ($request->hasFile('image') && ! $this->planLimitService->hasStorageRoom($restaurant, $request->file('image')->getSize())) {
+            return $this->planLimitService->limitReachedResponse($request, 'Kapasitas penyimpanan pada paket Anda sudah penuh.');
+        }
+
         $data = $request->safe()->except(['image', 'image_url']);
 
         if ($request->hasFile('image')) {
-            $data['image_path'] = $request->file('image')->store("restaurants/{$restaurant->id}/menu-items", 'public');
+            $data['image_path'] = $this->imageProcessingService->process(
+                $request->file('image'),
+                "restaurants/{$restaurant->id}/menu-items",
+                maxDimension: 1600,
+            );
             $data['image_url'] = null;
         } elseif ($request->filled('image_url')) {
             $data['image_path'] = null;
@@ -75,7 +95,11 @@ class MenuItemController extends Controller
 
         if ($request->hasFile('image')) {
             $this->deleteStoredImage($menuItem);
-            $data['image_path'] = $request->file('image')->store("restaurants/{$restaurant->id}/menu-items", 'public');
+            $data['image_path'] = $this->imageProcessingService->process(
+                $request->file('image'),
+                "restaurants/{$restaurant->id}/menu-items",
+                maxDimension: 1600,
+            );
             $data['image_url'] = null;
         } elseif ($request->filled('image_url')) {
             $this->deleteStoredImage($menuItem);

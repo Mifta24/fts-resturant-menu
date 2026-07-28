@@ -18,7 +18,7 @@ class StoreMenuItemRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'price' => ['required', 'numeric', 'min:0'],
-            'image' => ['nullable', 'image', 'max:2048'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
             'image_url' => ['nullable', 'url:http,https', 'max:2048'],
             'is_available' => ['sometimes', 'boolean'],
         ];

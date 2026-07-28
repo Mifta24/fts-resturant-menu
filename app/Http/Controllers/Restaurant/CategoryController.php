@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
+use App\Services\PlanLimitService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -14,6 +16,8 @@ use Illuminate\View\View;
 class CategoryController extends Controller
 {
     use ResolvesCurrentRestaurant;
+
+    public function __construct(private PlanLimitService $planLimitService) {}
 
     public function index(Request $request): View
     {
@@ -25,9 +29,13 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function store(StoreCategoryRequest $request): RedirectResponse
+    public function store(StoreCategoryRequest $request): RedirectResponse|JsonResponse
     {
         $restaurant = $this->currentRestaurant($request);
+
+        if (! $this->planLimitService->canCreateCategory($restaurant)) {
+            return $this->planLimitService->limitReachedResponse($request, 'Batas jumlah kategori pada paket Anda sudah tercapai.');
+        }
 
         $restaurant->categories()->create([
             ...$request->validated(),
