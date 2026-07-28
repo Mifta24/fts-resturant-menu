@@ -1,3 +1,6 @@
+@php
+    $hasRestaurant = (bool) Auth::user()?->currentRestaurant();
+@endphp
 <nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -12,24 +15,26 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard.index')" :active="request()->routeIs('dashboard.index')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('dashboard.profile.edit')" :active="request()->routeIs('dashboard.profile.*')">
-                        {{ __('Profil Restoran') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('dashboard.categories.index')" :active="request()->routeIs('dashboard.categories.*')">
-                        {{ __('Kategori') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('dashboard.menu-items.index')" :active="request()->routeIs('dashboard.menu-items.*')">
-                        {{ __('Menu') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('dashboard.qr-code.show')" :active="request()->routeIs('dashboard.qr-code.*')">
-                        {{ __('QR Code') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('dashboard.subscription.show')" :active="request()->routeIs('dashboard.subscription.*')">
-                        {{ __('Langganan') }}
-                    </x-nav-link>
+                    @if ($hasRestaurant)
+                        <x-nav-link :href="route('dashboard.index')" :active="request()->routeIs('dashboard.index')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('dashboard.profile.edit')" :active="request()->routeIs('dashboard.profile.*')">
+                            {{ __('Profil Restoran') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('dashboard.categories.index')" :active="request()->routeIs('dashboard.categories.*')">
+                            {{ __('Kategori') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('dashboard.menu-items.index')" :active="request()->routeIs('dashboard.menu-items.*')">
+                            {{ __('Menu') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('dashboard.qr-code.show')" :active="request()->routeIs('dashboard.qr-code.*')">
+                            {{ __('QR Code') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('dashboard.subscription.show')" :active="request()->routeIs('dashboard.subscription.*')">
+                            {{ __('Langganan') }}
+                        </x-nav-link>
+                    @endif
                     @if (Auth::user()->is_super_admin)
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
                             {{ __('Admin') }}
@@ -87,21 +92,31 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard.index')" :active="request()->routeIs('dashboard.index')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('dashboard.profile.edit')" :active="request()->routeIs('dashboard.profile.*')">
-                {{ __('Profil Restoran') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('dashboard.categories.index')" :active="request()->routeIs('dashboard.categories.*')">
-                {{ __('Kategori') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('dashboard.menu-items.index')" :active="request()->routeIs('dashboard.menu-items.*')">
-                {{ __('Menu') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('dashboard.qr-code.show')" :active="request()->routeIs('dashboard.qr-code.*')">
-                {{ __('QR Code') }}
-            </x-responsive-nav-link>
+            @if ($hasRestaurant)
+                <x-responsive-nav-link :href="route('dashboard.index')" :active="request()->routeIs('dashboard.index')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dashboard.profile.edit')" :active="request()->routeIs('dashboard.profile.*')">
+                    {{ __('Profil Restoran') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dashboard.categories.index')" :active="request()->routeIs('dashboard.categories.*')">
+                    {{ __('Kategori') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dashboard.menu-items.index')" :active="request()->routeIs('dashboard.menu-items.*')">
+                    {{ __('Menu') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dashboard.qr-code.show')" :active="request()->routeIs('dashboard.qr-code.*')">
+                    {{ __('QR Code') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dashboard.subscription.show')" :active="request()->routeIs('dashboard.subscription.*')">
+                    {{ __('Langganan') }}
+                </x-responsive-nav-link>
+            @endif
+            @if (Auth::user()->is_super_admin)
+                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                    {{ __('Admin') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
