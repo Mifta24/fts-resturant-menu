@@ -11,6 +11,10 @@ class EnsureRestaurantOnboarded
     public function handle(Request $request, Closure $next): Response
     {
         if (! $request->user()?->currentRestaurant()) {
+            if ($request->user()?->is_super_admin) {
+                return redirect()->route('admin.dashboard');
+            }
+
             return redirect()->route('dashboard.onboarding.create');
         }
 

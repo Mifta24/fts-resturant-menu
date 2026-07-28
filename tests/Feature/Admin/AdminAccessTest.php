@@ -58,4 +58,13 @@ class AdminAccessTest extends TestCase
         $this->get(route('admin.dashboard'))
             ->assertRedirect(route('login'));
     }
+
+    public function test_super_admin_without_restaurant_visiting_dashboard_lands_on_admin_console(): void
+    {
+        $admin = User::factory()->create(['is_super_admin' => true]);
+
+        $this->actingAs($admin)
+            ->get(route('dashboard.index'))
+            ->assertRedirect(route('admin.dashboard'));
+    }
 }
