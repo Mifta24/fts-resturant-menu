@@ -24,8 +24,8 @@
                     @csrf
                     <input type="text" name="name" placeholder="{{ __('Nama') }}" required class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
                     <input type="text" name="code" placeholder="{{ __('Kode (mis. starter)') }}" required class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
-                    <input type="number" step="0.01" name="monthly_price" placeholder="{{ __('Harga Bulanan') }}" required class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
-                    <input type="number" step="0.01" name="yearly_price" placeholder="{{ __('Harga Tahunan (opsional)') }}" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
+                    <x-rupiah-input name="monthly_price" :value="0" placeholder="{{ __('Harga Bulanan') }}" required />
+                    <x-rupiah-input name="yearly_price" :value="null" nullable placeholder="{{ __('Harga Tahunan (opsional)') }}" />
                     <input type="number" name="menu_limit" placeholder="{{ __('Batas Menu (kosong = unlimited)') }}" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
                     <input type="number" name="category_limit" placeholder="{{ __('Batas Kategori (kosong = unlimited)') }}" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
                     <input type="number" name="storage_limit_mb" value="50" placeholder="{{ __('Batas Storage (MB)') }}" required class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
@@ -50,8 +50,8 @@
                             @method('PATCH')
                             <input type="text" name="name" value="{{ $package->name }}" required class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
                             <input type="text" name="code" value="{{ $package->code }}" required class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
-                            <input type="number" step="0.01" name="monthly_price" value="{{ $package->monthly_price }}" required class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
-                            <input type="number" step="0.01" name="yearly_price" value="{{ $package->yearly_price }}" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
+                            <x-rupiah-input name="monthly_price" :value="$package->monthly_price" required />
+                            <x-rupiah-input name="yearly_price" :value="$package->yearly_price" nullable />
                             <input type="number" name="menu_limit" value="{{ $package->menu_limit }}" placeholder="{{ __('unlimited') }}" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
                             <input type="number" name="category_limit" value="{{ $package->category_limit }}" placeholder="{{ __('unlimited') }}" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
                             <input type="number" name="storage_limit_mb" value="{{ $package->storage_limit_mb }}" required class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm" />
