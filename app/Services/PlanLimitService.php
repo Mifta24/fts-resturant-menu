@@ -25,6 +25,11 @@ class PlanLimitService
         return $limit === null || $restaurant->menuItems()->count() < $limit;
     }
 
+    public function hasStatistics(Restaurant $restaurant): bool
+    {
+        return (bool) $this->package($restaurant)->has_statistics;
+    }
+
     public function hasStorageRoom(Restaurant $restaurant, int $incomingBytes): bool
     {
         $limitMb = $this->package($restaurant)->storage_limit_mb;

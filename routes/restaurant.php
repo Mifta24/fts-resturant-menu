@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Restaurant\AnalyticsController;
 use App\Http\Controllers\Restaurant\CategoryController;
 use App\Http\Controllers\Restaurant\DashboardController;
 use App\Http\Controllers\Restaurant\FeedbackController;
@@ -36,6 +37,8 @@ Route::middleware(['auth', 'verified', 'restaurant.onboarded'])->prefix('dashboa
 
     Route::get('/qr-code', [QrCodeController::class, 'show'])->name('qr-code.show');
     Route::get('/qr-code/download', [QrCodeController::class, 'download'])->name('qr-code.download');
+
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 
     Route::get('/subscription', [SubscriptionController::class, 'show'])->name('subscription.show');
     Route::post('/subscription/select-package', [SubscriptionController::class, 'selectPackage'])->name('subscription.select-package');
