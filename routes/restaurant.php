@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Restaurant\CategoryController;
 use App\Http\Controllers\Restaurant\DashboardController;
+use App\Http\Controllers\Restaurant\FeedbackController;
 use App\Http\Controllers\Restaurant\MenuItemController;
 use App\Http\Controllers\Restaurant\OnboardingController;
 use App\Http\Controllers\Restaurant\QrCodeController;
@@ -40,4 +41,7 @@ Route::middleware(['auth', 'verified', 'restaurant.onboarded'])->prefix('dashboa
     Route::post('/subscription/select-package', [SubscriptionController::class, 'selectPackage'])->name('subscription.select-package');
     Route::post('/subscription/upload-payment', [SubscriptionController::class, 'uploadPayment'])->name('subscription.upload-payment');
     Route::get('/subscription/payments/{payment}/proof', [SubscriptionController::class, 'downloadProof'])->name('subscription.payments.proof');
+
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 });
