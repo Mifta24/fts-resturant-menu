@@ -34,6 +34,9 @@
                         <x-nav-link :href="route('dashboard.subscription.show')" :active="request()->routeIs('dashboard.subscription.*')">
                             {{ __('Langganan') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('dashboard.feedback.index')" :active="request()->routeIs('dashboard.feedback.*')">
+                            {{ __('Feedback') }}
+                        </x-nav-link>
                     @endif
                     @if (Auth::user()->is_super_admin)
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
@@ -110,6 +113,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('dashboard.subscription.show')" :active="request()->routeIs('dashboard.subscription.*')">
                     {{ __('Langganan') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dashboard.feedback.index')" :active="request()->routeIs('dashboard.feedback.*')">
+                    {{ __('Feedback') }}
                 </x-responsive-nav-link>
             @endif
             @if (Auth::user()->is_super_admin)

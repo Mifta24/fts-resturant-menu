@@ -31,6 +31,7 @@
                 <x-secondary-button onclick="window.location='{{ route('admin.packages.index') }}'">{{ __('Kelola Paket') }}</x-secondary-button>
                 <x-secondary-button onclick="window.location='{{ route('admin.subscriptions.index') }}'">{{ __('Kelola Langganan') }}</x-secondary-button>
                 <x-secondary-button onclick="window.location='{{ route('admin.payments.index') }}'">{{ __('Kelola Pembayaran') }}</x-secondary-button>
+                <x-secondary-button onclick="window.location='{{ route('admin.feedback.index') }}'">{{ __('Kelola Feedback') }}</x-secondary-button>
             </div>
         </div>
     </div>
