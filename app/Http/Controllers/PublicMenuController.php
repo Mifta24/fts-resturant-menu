@@ -13,6 +13,8 @@ class PublicMenuController extends Controller
 
         abort_if(! $restaurant->isPublished(), 404);
 
+        $restaurant->menuViews()->create();
+
         $categories = $restaurant->categories()
             ->where('is_active', true)
             ->with(['menuItems' => function ($query) {
