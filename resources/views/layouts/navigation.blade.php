@@ -31,6 +31,9 @@
                         <x-nav-link :href="route('dashboard.qr-code.show')" :active="request()->routeIs('dashboard.qr-code.*')">
                             {{ __('QR Code') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('dashboard.analytics.index')" :active="request()->routeIs('dashboard.analytics.*')">
+                            {{ __('Statistik') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('dashboard.subscription.show')" :active="request()->routeIs('dashboard.subscription.*')">
                             {{ __('Langganan') }}
                         </x-nav-link>
@@ -110,6 +113,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('dashboard.qr-code.show')" :active="request()->routeIs('dashboard.qr-code.*')">
                     {{ __('QR Code') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dashboard.analytics.index')" :active="request()->routeIs('dashboard.analytics.*')">
+                    {{ __('Statistik') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('dashboard.subscription.show')" :active="request()->routeIs('dashboard.subscription.*')">
                     {{ __('Langganan') }}
