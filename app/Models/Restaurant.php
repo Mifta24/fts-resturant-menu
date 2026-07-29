@@ -65,6 +65,11 @@ class Restaurant extends Model
         return $this->hasMany(Feedback::class);
     }
 
+    public function menuViews(): HasMany
+    {
+        return $this->hasMany(MenuView::class);
+    }
+
     public function activeSubscription(): HasOne
     {
         return $this->hasOne(Subscription::class)->ofMany(
