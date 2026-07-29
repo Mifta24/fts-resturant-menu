@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Restaurant;
 
 use App\Http\Controllers\Concerns\ResolvesCurrentRestaurant;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BulkImportMenuItemsRequest;
 use App\Http\Requests\StoreMenuItemRequest;
 use App\Http\Requests\UpdateMenuItemRequest;
 use App\Models\Category;
 use App\Models\MenuItem;
+use App\Models\Restaurant;
 use App\Services\ImageProcessingService;
 use App\Services\PlanLimitService;
 use Illuminate\Http\JsonResponse;
@@ -69,6 +71,61 @@ class MenuItemController extends Controller
         ]);
 
         return back()->with('status', 'menu-item-created');
+    }
+
+    public function bulkImport(BulkImportMenuItemsRequest $request): RedirectResponse
+    {
+        $restaurant = $this->currentRestaurant($request);
+
+        $created = 0;
+        $skipped = 0;
+
+        foreach (preg_split('/\r\n|\r|\n/', $request->validated('data')) as $line) {
+            $line = trim($line);
+
+            if ($line === '') {
+                continue;
+            }
+
+            $parts = array_map('trim', explode('|', $line));
+
+            if (count($parts) !== 3 || $parts[0] === '' || $parts[1] === '') {
+                $skipped++;
+
+                continue;
+            }
+
+            [$categoryName, $name, $priceRaw] = $parts;
+            $price = (int) preg_replace('/[^0-9]/', '', $priceRaw);
+
+            if ($price <= 0) {
+                $skipped++;
+
+                continue;
+            }
+
+            $category = $this->findOrCreateCategory($restaurant, $categoryName);
+
+            if (! $category || ! $this->planLimitService->canCreateMenuItem($restaurant)) {
+                $skipped++;
+
+                continue;
+            }
+
+            $restaurant->menuItems()->create([
+                'category_id' => $category->id,
+                'name' => $name,
+                'price' => $price,
+                'is_available' => true,
+                'sort_order' => $restaurant->menuItems()->max('sort_order') + 1,
+            ]);
+
+            $created++;
+        }
+
+        return back()->with('status', 'menu-items-bulk-imported')
+            ->with('bulkImportCreated', $created)
+            ->with('bulkImportSkipped', $skipped);
     }
 
     public function edit(Request $request, MenuItem $menuItem): View
@@ -136,6 +193,25 @@ class MenuItemController extends Controller
         $menuItem->update(['is_available' => ! $menuItem->is_available]);
 
         return back()->with('status', 'menu-item-availability-updated');
+    }
+
+    private function findOrCreateCategory(Restaurant $restaurant, string $name): ?Category
+    {
+        $category = $restaurant->categories()->whereRaw('LOWER(name) = ?', [mb_strtolower($name)])->first();
+
+        if ($category) {
+            return $category;
+        }
+
+        if (! $this->planLimitService->canCreateCategory($restaurant)) {
+            return null;
+        }
+
+        return $restaurant->categories()->create([
+            'name' => $name,
+            'is_active' => true,
+            'sort_order' => $restaurant->categories()->max('sort_order') + 1,
+        ]);
     }
 
     private function ensureCategoryBelongsToRestaurant(int $restaurantId, int $categoryId): void
