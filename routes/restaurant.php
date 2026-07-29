@@ -30,6 +30,7 @@ Route::middleware(['auth', 'verified', 'restaurant.onboarded'])->prefix('dashboa
 
     Route::get('/menu-items', [MenuItemController::class, 'index'])->name('menu-items.index');
     Route::post('/menu-items', [MenuItemController::class, 'store'])->name('menu-items.store');
+    Route::post('/menu-items/bulk-import', [MenuItemController::class, 'bulkImport'])->name('menu-items.bulk-import');
     Route::get('/menu-items/{menuItem}/edit', [MenuItemController::class, 'edit'])->name('menu-items.edit');
     Route::patch('/menu-items/{menuItem}', [MenuItemController::class, 'update'])->name('menu-items.update');
     Route::delete('/menu-items/{menuItem}', [MenuItemController::class, 'destroy'])->name('menu-items.destroy');
