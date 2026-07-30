@@ -19,6 +19,8 @@ require __DIR__.'/restaurant.php';
 require __DIR__.'/admin.php';
 
 Route::view('/blocked', 'blocked')->name('blocked');
+Route::view('/terms', 'legal.terms')->name('terms');
+Route::view('/privacy', 'legal.privacy')->name('privacy');
 
 Route::get('/{restaurantSlug}', [PublicMenuController::class, 'show'])
     ->where('restaurantSlug', '[a-z0-9-]+')
