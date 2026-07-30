@@ -7,8 +7,10 @@ use App\Models\Package;
 use App\Models\Restaurant;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Notifications\FeedbackStatusUpdatedNotification;
 use Database\Seeders\PackageSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class FeedbackTest extends TestCase
@@ -90,6 +92,49 @@ class FeedbackTest extends TestCase
             'status' => Feedback::STATUS_RESOLVED,
             'admin_note' => 'Sudah ditambahkan.',
         ]);
+    }
+
+    public function test_submitter_is_notified_when_admin_updates_feedback_status(): void
+    {
+        Notification::fake();
+
+        $admin = User::factory()->create(['is_super_admin' => true]);
+        [$owner, $restaurant] = $this->restaurantWithOwner('a');
+
+        $feedback = $restaurant->feedback()->create([
+            'user_id' => $owner->id,
+            'type' => Feedback::TYPE_SUGGESTION,
+            'message' => 'Tambahkan mode gelap.',
+            'status' => Feedback::STATUS_NEW,
+        ]);
+
+        $this->actingAs($admin)->patch(route('admin.feedback.update', $feedback), [
+            'status' => Feedback::STATUS_RESOLVED,
+            'admin_note' => 'Sudah ditambahkan.',
+        ]);
+
+        Notification::assertSentTo($owner, FeedbackStatusUpdatedNotification::class);
+    }
+
+    public function test_submitter_is_not_notified_when_feedback_is_unchanged(): void
+    {
+        Notification::fake();
+
+        $admin = User::factory()->create(['is_super_admin' => true]);
+        [$owner, $restaurant] = $this->restaurantWithOwner('a');
+
+        $feedback = $restaurant->feedback()->create([
+            'user_id' => $owner->id,
+            'type' => Feedback::TYPE_SUGGESTION,
+            'message' => 'Tambahkan mode gelap.',
+            'status' => Feedback::STATUS_NEW,
+        ]);
+
+        $this->actingAs($admin)->patch(route('admin.feedback.update', $feedback), [
+            'status' => Feedback::STATUS_NEW,
+        ]);
+
+        Notification::assertNothingSent();
     }
 
     public function test_owner_cannot_update_another_restaurants_feedback(): void
