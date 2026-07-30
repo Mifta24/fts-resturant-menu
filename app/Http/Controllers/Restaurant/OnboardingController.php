@@ -9,6 +9,7 @@ use App\Models\Restaurant;
 use App\Models\Subscription;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class OnboardingController extends Controller
@@ -32,24 +33,32 @@ class OnboardingController extends Controller
 
         $data = $request->validated();
 
-        $restaurant = Restaurant::create([
-            'name' => $data['name'],
-            'slug' => Restaurant::generateUniqueSlug($data['name']),
-            'description' => $data['description'] ?? null,
-            'phone' => $data['phone'] ?? null,
-            'public_status' => 'draft',
-        ]);
+        DB::transaction(function () use ($data, $user) {
+            $lockedUser = $user->newQuery()->whereKey($user->id)->lockForUpdate()->first();
 
-        $restaurant->users()->attach($user->id, ['role' => 'owner', 'status' => 'active']);
+            if ($lockedUser->currentRestaurant()) {
+                return;
+            }
 
-        if ($freePackage = Package::free()) {
-            $restaurant->subscriptions()->create([
-                'package_id' => $freePackage->id,
-                'billing_cycle' => 'monthly',
-                'status' => Subscription::STATUS_ACTIVE,
-                'starts_at' => now(),
+            $restaurant = Restaurant::create([
+                'name' => $data['name'],
+                'slug' => Restaurant::generateUniqueSlug($data['name']),
+                'description' => $data['description'] ?? null,
+                'phone' => $data['phone'] ?? null,
+                'public_status' => 'draft',
             ]);
-        }
+
+            $restaurant->users()->attach($user->id, ['role' => 'owner', 'status' => 'active']);
+
+            if ($freePackage = Package::free()) {
+                $restaurant->subscriptions()->create([
+                    'package_id' => $freePackage->id,
+                    'billing_cycle' => 'monthly',
+                    'status' => Subscription::STATUS_ACTIVE,
+                    'starts_at' => now(),
+                ]);
+            }
+        });
 
         return redirect()->route('dashboard.index')->with('status', 'restaurant-onboarded');
     }
