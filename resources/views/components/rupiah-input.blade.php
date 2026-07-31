@@ -15,14 +15,14 @@
     }"
     class="relative"
 >
-    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-gray-500 dark:text-gray-400">Rp</span>
+    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-smoke">Rp</span>
     <input
         type="text"
         inputmode="numeric"
         :value="formatted"
         @input="onInput"
         @focus="$el.select()"
-        {{ $attributes->merge(['class' => 'w-full pl-9 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm']) }}
+        {{ $attributes->merge(['class' => 'w-full rounded-xl border-silver pl-9 text-sm text-ink shadow-sm focus:border-signal-blue focus:ring-signal-blue']) }}
         @if ($required) required @endif
     >
     <input type="hidden" name="{{ $name }}" :value="raw === null ? '' : raw">
