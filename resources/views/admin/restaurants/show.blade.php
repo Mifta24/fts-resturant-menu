@@ -1,57 +1,53 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ $restaurant->name }}
-        </h2>
+        <h1 class="text-heading-sm font-semibold text-ink">{{ $restaurant->name }}</h1>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="max-w-4xl space-y-6">
 
-            @if (session('status'))
-                <div class="bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm rounded-md p-4">
-                    {{ __('Status restoran diperbarui.') }}
+        @if (session('status'))
+            <div class="rounded-xl bg-vivid-green/15 p-4 text-sm text-green-700">
+                {{ __('Status restoran diperbarui.') }}
+            </div>
+        @endif
+
+        <div class="rounded-card bg-pure-white p-6 shadow-ambient">
+            <h2 class="mb-2 font-semibold text-ink">{{ __('Informasi') }}</h2>
+            <p class="text-sm text-smoke">{{ __('Slug') }}: /{{ $restaurant->slug }}</p>
+            <p class="text-sm text-smoke">{{ __('Paket Aktif') }}: {{ $restaurant->activeSubscription?->package?->name ?? '-' }}</p>
+
+            <form method="POST" action="{{ route('admin.restaurants.status', $restaurant) }}" class="mt-4 flex items-center gap-3">
+                @csrf
+                @method('PATCH')
+                <select name="public_status" class="rounded-xl border-silver text-sm text-ink shadow-sm focus:border-signal-blue focus:ring-signal-blue">
+                    @foreach (['draft', 'published', 'inactive'] as $status)
+                        <option value="{{ $status }}" @selected($restaurant->public_status === $status)>{{ $status }}</option>
+                    @endforeach
+                </select>
+                <x-secondary-button type="submit">{{ __('Simpan Status') }}</x-secondary-button>
+            </form>
+        </div>
+
+        <div class="divide-y divide-mist rounded-card bg-pure-white shadow-ambient">
+            <h2 class="p-6 pb-0 font-semibold text-ink">{{ __('Riwayat Langganan') }}</h2>
+            @forelse ($restaurant->subscriptions as $subscription)
+                <div class="p-6 text-sm text-smoke">
+                    {{ $subscription->package->name ?? '-' }} &middot; {{ $subscription->status }} &middot; {{ $subscription->billing_cycle }}
                 </div>
-            @endif
+            @empty
+                <div class="p-6 text-sm text-smoke">{{ __('Belum ada langganan.') }}</div>
+            @endforelse
+        </div>
 
-            <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
-                <h3 class="font-semibold text-gray-800 dark:text-gray-200 mb-2">{{ __('Informasi') }}</h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Slug') }}: /{{ $restaurant->slug }}</p>
-                <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Paket Aktif') }}: {{ $restaurant->activeSubscription?->package?->name ?? '-' }}</p>
-
-                <form method="POST" action="{{ route('admin.restaurants.status', $restaurant) }}" class="mt-4 flex items-center gap-3">
-                    @csrf
-                    @method('PATCH')
-                    <select name="public_status" class="text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
-                        @foreach (['draft', 'published', 'inactive'] as $status)
-                            <option value="{{ $status }}" @selected($restaurant->public_status === $status)>{{ $status }}</option>
-                        @endforeach
-                    </select>
-                    <x-secondary-button type="submit">{{ __('Simpan Status') }}</x-secondary-button>
-                </form>
-            </div>
-
-            <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg divide-y divide-gray-100 dark:divide-gray-700">
-                <h3 class="font-semibold text-gray-800 dark:text-gray-200 p-6 pb-0">{{ __('Riwayat Langganan') }}</h3>
-                @forelse ($restaurant->subscriptions as $subscription)
-                    <div class="p-6 text-sm text-gray-600 dark:text-gray-400">
-                        {{ $subscription->package->name ?? '-' }} &middot; {{ $subscription->status }} &middot; {{ $subscription->billing_cycle }}
-                    </div>
-                @empty
-                    <div class="p-6 text-sm text-gray-500 dark:text-gray-400">{{ __('Belum ada langganan.') }}</div>
-                @endforelse
-            </div>
-
-            <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg divide-y divide-gray-100 dark:divide-gray-700">
-                <h3 class="font-semibold text-gray-800 dark:text-gray-200 p-6 pb-0">{{ __('Riwayat Pembayaran') }}</h3>
-                @forelse ($restaurant->payments as $payment)
-                    <div class="p-6 text-sm text-gray-600 dark:text-gray-400">
-                        Rp{{ number_format((float) $payment->amount, 0, ',', '.') }} &middot; {{ $payment->status }}
-                    </div>
-                @empty
-                    <div class="p-6 text-sm text-gray-500 dark:text-gray-400">{{ __('Belum ada pembayaran.') }}</div>
-                @endforelse
-            </div>
+        <div class="divide-y divide-mist rounded-card bg-pure-white shadow-ambient">
+            <h2 class="p-6 pb-0 font-semibold text-ink">{{ __('Riwayat Pembayaran') }}</h2>
+            @forelse ($restaurant->payments as $payment)
+                <div class="p-6 text-sm text-smoke">
+                    Rp{{ number_format((float) $payment->amount, 0, ',', '.') }} &middot; {{ $payment->status }}
+                </div>
+            @empty
+                <div class="p-6 text-sm text-smoke">{{ __('Belum ada pembayaran.') }}</div>
+            @endforelse
         </div>
     </div>
 </x-app-layout>

@@ -1,52 +1,52 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Feedback') }}
-        </h2>
+        <h1 class="text-heading-sm font-semibold text-ink">{{ __('Feedback') }}</h1>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg overflow-x-auto">
-                <table class="min-w-full text-sm">
-                    <thead class="text-left text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700">
+    <div class="space-y-6">
+        <div class="overflow-x-auto rounded-card bg-pure-white shadow-ambient">
+            <table class="min-w-full text-sm">
+                <thead class="border-b border-mist text-left text-smoke">
+                    <tr>
+                        <th class="p-4 font-medium">{{ __('Restoran') }}</th>
+                        <th class="p-4 font-medium">{{ __('Jenis') }}</th>
+                        <th class="p-4 font-medium">{{ __('Pesan') }}</th>
+                        <th class="p-4 font-medium">{{ __('Dikirim') }}</th>
+                        <th class="p-4 font-medium">{{ __('Status') }}</th>
+                        <th class="p-4"></th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-mist">
+                    @foreach ($feedback as $item)
                         <tr>
-                            <th class="p-4">{{ __('Restoran') }}</th>
-                            <th class="p-4">{{ __('Jenis') }}</th>
-                            <th class="p-4">{{ __('Pesan') }}</th>
-                            <th class="p-4">{{ __('Dikirim') }}</th>
-                            <th class="p-4">{{ __('Status') }}</th>
-                            <th class="p-4"></th>
+                            <td class="p-4 text-ink">{{ $item->restaurant->name }}</td>
+                            <td class="p-4 text-smoke">{{ ucfirst($item->type) }}</td>
+                            <td class="max-w-sm truncate p-4 text-smoke" title="{{ $item->message }}">{{ $item->message }}</td>
+                            <td class="p-4 text-smoke">{{ $item->created_at->translatedFormat('d M Y H:i') }}</td>
+                            <td class="p-4">
+                                <x-badge :color="$item->status === 'resolved' ? 'green' : ($item->status === 'reviewed' ? 'amber' : 'blue')">
+                                    {{ ucfirst($item->status) }}
+                                </x-badge>
+                            </td>
+                            <td class="p-4 text-right">
+                                <form method="POST" action="{{ route('admin.feedback.update', $item) }}" class="inline-flex items-center gap-2">
+                                    @csrf
+                                    @method('PATCH')
+                                    <select name="status" class="rounded-xl border-silver text-sm text-ink shadow-sm focus:border-signal-blue focus:ring-signal-blue">
+                                        @foreach (['new', 'reviewed', 'resolved'] as $status)
+                                            <option value="{{ $status }}" @selected($item->status === $status)>{{ ucfirst($status) }}</option>
+                                        @endforeach
+                                    </select>
+                                    <input type="text" name="admin_note" value="{{ $item->admin_note }}" placeholder="{{ __('Catatan') }}" class="rounded-xl border-silver text-sm text-ink shadow-sm focus:border-signal-blue focus:ring-signal-blue" />
+                                    <x-secondary-button type="submit">{{ __('Simpan') }}</x-secondary-button>
+                                </form>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                        @foreach ($feedback as $item)
-                            <tr>
-                                <td class="p-4 text-gray-800 dark:text-gray-200">{{ $item->restaurant->name }}</td>
-                                <td class="p-4 text-gray-600 dark:text-gray-400">{{ ucfirst($item->type) }}</td>
-                                <td class="p-4 text-gray-600 dark:text-gray-400 max-w-sm truncate" title="{{ $item->message }}">{{ $item->message }}</td>
-                                <td class="p-4 text-gray-600 dark:text-gray-400">{{ $item->created_at->translatedFormat('d M Y H:i') }}</td>
-                                <td class="p-4 text-gray-600 dark:text-gray-400">{{ ucfirst($item->status) }}</td>
-                                <td class="p-4 text-right">
-                                    <form method="POST" action="{{ route('admin.feedback.update', $item) }}" class="inline-flex items-center gap-2">
-                                        @csrf
-                                        @method('PATCH')
-                                        <select name="status" class="text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
-                                            @foreach (['new', 'reviewed', 'resolved'] as $status)
-                                                <option value="{{ $status }}" @selected($item->status === $status)>{{ ucfirst($status) }}</option>
-                                            @endforeach
-                                        </select>
-                                        <input type="text" name="admin_note" value="{{ $item->admin_note }}" placeholder="{{ __('Catatan') }}" class="text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm" />
-                                        <x-secondary-button type="submit">{{ __('Simpan') }}</x-secondary-button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            {{ $feedback->links() }}
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+
+        {{ $feedback->links() }}
     </div>
 </x-app-layout>

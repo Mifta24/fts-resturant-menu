@@ -1,51 +1,51 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Langganan') }}
-        </h2>
+        <h1 class="text-heading-sm font-semibold text-ink">{{ __('Langganan') }}</h1>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg overflow-x-auto">
-                <table class="min-w-full text-sm">
-                    <thead class="text-left text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700">
+    <div class="space-y-6">
+        <div class="overflow-x-auto rounded-card bg-pure-white shadow-ambient">
+            <table class="min-w-full text-sm">
+                <thead class="border-b border-mist text-left text-smoke">
+                    <tr>
+                        <th class="p-4 font-medium">{{ __('Restoran') }}</th>
+                        <th class="p-4 font-medium">{{ __('Paket') }}</th>
+                        <th class="p-4 font-medium">{{ __('Siklus') }}</th>
+                        <th class="p-4 font-medium">{{ __('Berakhir') }}</th>
+                        <th class="p-4 font-medium">{{ __('Status') }}</th>
+                        <th class="p-4"></th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-mist">
+                    @foreach ($subscriptions as $subscription)
                         <tr>
-                            <th class="p-4">{{ __('Restoran') }}</th>
-                            <th class="p-4">{{ __('Paket') }}</th>
-                            <th class="p-4">{{ __('Siklus') }}</th>
-                            <th class="p-4">{{ __('Berakhir') }}</th>
-                            <th class="p-4">{{ __('Status') }}</th>
-                            <th class="p-4"></th>
+                            <td class="p-4 text-ink">{{ $subscription->restaurant->name }}</td>
+                            <td class="p-4 text-smoke">{{ $subscription->package->name ?? '-' }}</td>
+                            <td class="p-4 text-smoke">{{ $subscription->billing_cycle }}</td>
+                            <td class="p-4 text-smoke">{{ $subscription->ends_at?->translatedFormat('d M Y') ?? '-' }}</td>
+                            <td class="p-4">
+                                <x-badge :color="$subscription->status === 'active' ? 'green' : ($subscription->status === 'pending' ? 'amber' : ($subscription->status === 'cancelled' ? 'red' : 'gray'))">
+                                    {{ $subscription->status }}
+                                </x-badge>
+                            </td>
+                            <td class="p-4 text-right">
+                                <form method="POST" action="{{ route('admin.subscriptions.update', $subscription) }}" class="inline-flex items-center gap-2">
+                                    @csrf
+                                    @method('PATCH')
+                                    <select name="status" class="rounded-xl border-silver text-sm text-ink shadow-sm focus:border-signal-blue focus:ring-signal-blue">
+                                        @foreach (['pending', 'active', 'expired', 'cancelled'] as $status)
+                                            <option value="{{ $status }}" @selected($subscription->status === $status)>{{ $status }}</option>
+                                        @endforeach
+                                    </select>
+                                    <x-secondary-button type="submit">{{ __('Simpan') }}</x-secondary-button>
+                                </form>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                        @foreach ($subscriptions as $subscription)
-                            <tr>
-                                <td class="p-4 text-gray-800 dark:text-gray-200">{{ $subscription->restaurant->name }}</td>
-                                <td class="p-4 text-gray-600 dark:text-gray-400">{{ $subscription->package->name ?? '-' }}</td>
-                                <td class="p-4 text-gray-600 dark:text-gray-400">{{ $subscription->billing_cycle }}</td>
-                                <td class="p-4 text-gray-600 dark:text-gray-400">{{ $subscription->ends_at?->translatedFormat('d M Y') ?? '-' }}</td>
-                                <td class="p-4 text-gray-600 dark:text-gray-400">{{ $subscription->status }}</td>
-                                <td class="p-4 text-right">
-                                    <form method="POST" action="{{ route('admin.subscriptions.update', $subscription) }}" class="inline-flex items-center gap-2">
-                                        @csrf
-                                        @method('PATCH')
-                                        <select name="status" class="text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
-                                            @foreach (['pending', 'active', 'expired', 'cancelled'] as $status)
-                                                <option value="{{ $status }}" @selected($subscription->status === $status)>{{ $status }}</option>
-                                            @endforeach
-                                        </select>
-                                        <x-secondary-button type="submit">{{ __('Simpan') }}</x-secondary-button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            {{ $subscriptions->links() }}
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+
+        {{ $subscriptions->links() }}
     </div>
 </x-app-layout>
