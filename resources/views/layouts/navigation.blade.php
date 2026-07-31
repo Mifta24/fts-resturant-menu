@@ -1,159 +1,127 @@
 @php
     $hasRestaurant = (bool) Auth::user()?->currentRestaurant();
+    $isSuperAdmin = (bool) Auth::user()?->is_super_admin;
 @endphp
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard.index') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                    </a>
-                </div>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    @if ($hasRestaurant)
-                        <x-nav-link :href="route('dashboard.index')" :active="request()->routeIs('dashboard.index')">
-                            {{ __('Dashboard') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('dashboard.profile.edit')" :active="request()->routeIs('dashboard.profile.*')">
-                            {{ __('Profil Restoran') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('dashboard.categories.index')" :active="request()->routeIs('dashboard.categories.*')">
-                            {{ __('Kategori') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('dashboard.menu-items.index')" :active="request()->routeIs('dashboard.menu-items.*')">
-                            {{ __('Menu') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('dashboard.qr-code.show')" :active="request()->routeIs('dashboard.qr-code.*')">
-                            {{ __('QR Code') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('dashboard.analytics.index')" :active="request()->routeIs('dashboard.analytics.*')">
-                            {{ __('Statistik') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('dashboard.subscription.show')" :active="request()->routeIs('dashboard.subscription.*')">
-                            {{ __('Langganan') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('dashboard.feedback.index')" :active="request()->routeIs('dashboard.feedback.*')">
-                            {{ __('Feedback') }}
-                        </x-nav-link>
-                    @endif
-                    @if (Auth::user()->is_super_admin)
-                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
-                            {{ __('Admin') }}
-                        </x-nav-link>
-                    @endif
-                </div>
-            </div>
+<!-- Mobile overlay -->
+<div
+    x-show="sidebarOpen"
+    x-transition:enter="transition-opacity ease-out duration-200"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition-opacity ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 z-40 bg-ink/50 md:hidden"
+    style="display: none;"
+    @click="sidebarOpen = false"
+></div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
-            </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
+<aside
+    x-cloak
+    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+    class="fixed inset-y-0 left-0 z-50 flex w-72 shrink-0 transform flex-col bg-pure-white transition-transform duration-200 ease-in-out md:static md:z-auto md:translate-x-0 md:border-r md:border-mist"
+>
+    <div class="flex h-20 items-center justify-between gap-3 px-6">
+        <a href="{{ route('dashboard.index') }}" class="flex items-center gap-3">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-flame">
+                <x-application-logo class="h-5 w-5 fill-current text-pure-white" />
+            </span>
+            <span class="text-subheading font-semibold text-ink">FTS Menu</span>
+        </a>
+        <button @click="sidebarOpen = false" class="p-1 text-smoke md:hidden" aria-label="{{ __('Tutup menu') }}">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M6 18L18 6"></path></svg>
+        </button>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            @if ($hasRestaurant)
-                <x-responsive-nav-link :href="route('dashboard.index')" :active="request()->routeIs('dashboard.index')">
-                    {{ __('Dashboard') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('dashboard.profile.edit')" :active="request()->routeIs('dashboard.profile.*')">
-                    {{ __('Profil Restoran') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('dashboard.categories.index')" :active="request()->routeIs('dashboard.categories.*')">
-                    {{ __('Kategori') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('dashboard.menu-items.index')" :active="request()->routeIs('dashboard.menu-items.*')">
-                    {{ __('Menu') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('dashboard.qr-code.show')" :active="request()->routeIs('dashboard.qr-code.*')">
-                    {{ __('QR Code') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('dashboard.analytics.index')" :active="request()->routeIs('dashboard.analytics.*')">
-                    {{ __('Statistik') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('dashboard.subscription.show')" :active="request()->routeIs('dashboard.subscription.*')">
-                    {{ __('Langganan') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('dashboard.feedback.index')" :active="request()->routeIs('dashboard.feedback.*')">
-                    {{ __('Feedback') }}
-                </x-responsive-nav-link>
-            @endif
-            @if (Auth::user()->is_super_admin)
-                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
-                    {{ __('Admin') }}
-                </x-responsive-nav-link>
-            @endif
-        </div>
+    <nav class="flex-1 space-y-6 overflow-y-auto px-4 pb-4">
+        @if ($hasRestaurant)
+            <div class="space-y-1">
+                <p class="px-3 text-caption font-medium uppercase tracking-wide text-pewter">{{ __('Restoran') }}</p>
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                <x-nav-link :href="route('dashboard.index')" :active="request()->routeIs('dashboard.index')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.75" y="3.75" width="7" height="7" rx="1.5"></rect><rect x="13.25" y="3.75" width="7" height="7" rx="1.5"></rect><rect x="3.75" y="13.25" width="7" height="7" rx="1.5"></rect><rect x="13.25" y="13.25" width="7" height="7" rx="1.5"></rect></svg>
+                    <span>{{ __('Dashboard') }}</span>
+                </x-nav-link>
+                <x-nav-link :href="route('dashboard.profile.edit')" :active="request()->routeIs('dashboard.profile.*')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 9.75 5 4.5h14l1.25 5.25"></path><path d="M4.5 9.75v9a.75.75 0 0 0 .75.75h13.5a.75.75 0 0 0 .75-.75v-9"></path><path d="M9.75 19.5v-5.25a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75v5.25"></path></svg>
+                    <span>{{ __('Profil Restoran') }}</span>
+                </x-nav-link>
+                <x-nav-link :href="route('dashboard.categories.index')" :active="request()->routeIs('dashboard.categories.*')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11.03 3.75H6.75A2.25 2.25 0 0 0 4.5 6v4.28a2.25 2.25 0 0 0 .659 1.591l7.5 7.5a2.25 2.25 0 0 0 3.182 0l4.28-4.28a2.25 2.25 0 0 0 0-3.182l-7.5-7.5a2.25 2.25 0 0 0-1.591-.659Z"></path><circle cx="9" cy="9" r="1.25"></circle></svg>
+                    <span>{{ __('Kategori') }}</span>
+                </x-nav-link>
+                <x-nav-link :href="route('dashboard.menu-items.index')" :active="request()->routeIs('dashboard.menu-items.*')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 6.75h15"></path><path d="M4.5 12h15"></path><path d="M4.5 17.25h9"></path></svg>
+                    <span>{{ __('Menu') }}</span>
+                </x-nav-link>
+                <x-nav-link :href="route('dashboard.qr-code.show')" :active="request()->routeIs('dashboard.qr-code.*')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.75" y="3.75" width="6" height="6" rx="1"></rect><rect x="14.25" y="3.75" width="6" height="6" rx="1"></rect><rect x="3.75" y="14.25" width="6" height="6" rx="1"></rect><rect x="14.25" y="14.25" width="2.5" height="2.5"></rect><rect x="17.75" y="14.25" width="2.5" height="2.5"></rect><rect x="14.25" y="17.75" width="2.5" height="2.5"></rect><rect x="17.75" y="17.75" width="2.5" height="2.5"></rect></svg>
+                    <span>{{ __('QR Code') }}</span>
+                </x-nav-link>
+                <x-nav-link :href="route('dashboard.analytics.index')" :active="request()->routeIs('dashboard.analytics.*')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 19.5v-5.25"></path><path d="M12 19.5V8.25"></path><path d="M18.75 19.5v-9"></path></svg>
+                    <span>{{ __('Statistik') }}</span>
+                </x-nav-link>
+                <x-nav-link :href="route('dashboard.subscription.show')" :active="request()->routeIs('dashboard.subscription.*')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.75" y="6" width="16.5" height="12" rx="1.5"></rect><path d="M3.75 10.5h16.5"></path></svg>
+                    <span>{{ __('Langganan') }}</span>
+                </x-nav-link>
+                <x-nav-link :href="route('dashboard.feedback.index')" :active="request()->routeIs('dashboard.feedback.*')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.25h15a1.5 1.5 0 0 1 1.5 1.5v8.25a1.5 1.5 0 0 1-1.5 1.5H9l-4.5 3.75V16.5H4.5a1.5 1.5 0 0 1-1.5-1.5V6.75a1.5 1.5 0 0 1 1.5-1.5Z"></path></svg>
+                    <span>{{ __('Feedback') }}</span>
+                </x-nav-link>
             </div>
+        @endif
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
+        @if ($isSuperAdmin)
+            <div class="space-y-1">
+                <p class="px-3 text-caption font-medium uppercase tracking-wide text-pewter">{{ __('Admin') }}</p>
 
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
+                <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.75" y="3.75" width="7" height="7" rx="1.5"></rect><rect x="13.25" y="3.75" width="7" height="7" rx="1.5"></rect><rect x="3.75" y="13.25" width="7" height="7" rx="1.5"></rect><rect x="13.25" y="13.25" width="7" height="7" rx="1.5"></rect></svg>
+                    <span>{{ __('Dashboard') }}</span>
+                </x-nav-link>
+                <x-nav-link :href="route('admin.restaurants.index')" :active="request()->routeIs('admin.restaurants.*')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 9.75 5 4.5h14l1.25 5.25"></path><path d="M4.5 9.75v9a.75.75 0 0 0 .75.75h13.5a.75.75 0 0 0 .75-.75v-9"></path><path d="M9.75 19.5v-5.25a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75v5.25"></path></svg>
+                    <span>{{ __('Restoran') }}</span>
+                </x-nav-link>
+                <x-nav-link :href="route('admin.packages.index')" :active="request()->routeIs('admin.packages.*')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.75" y="8.25" width="16.5" height="12" rx="1"></rect><path d="M3.75 12h16.5"></path><path d="M12 8.25v12"></path></svg>
+                    <span>{{ __('Paket') }}</span>
+                </x-nav-link>
+                <x-nav-link :href="route('admin.subscriptions.index')" :active="request()->routeIs('admin.subscriptions.*')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.75" y="6" width="16.5" height="12" rx="1.5"></rect><path d="M3.75 10.5h16.5"></path></svg>
+                    <span>{{ __('Langganan') }}</span>
+                </x-nav-link>
+                <x-nav-link :href="route('admin.payments.index')" :active="request()->routeIs('admin.payments.*')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.25" y="6.75" width="19.5" height="10.5" rx="1.5"></rect><circle cx="12" cy="12" r="2.25"></circle></svg>
+                    <span>{{ __('Pembayaran') }}</span>
+                </x-nav-link>
+                <x-nav-link :href="route('admin.feedback.index')" :active="request()->routeIs('admin.feedback.*')">
+                    <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.25h15a1.5 1.5 0 0 1 1.5 1.5v8.25a1.5 1.5 0 0 1-1.5 1.5H9l-4.5 3.75V16.5H4.5a1.5 1.5 0 0 1-1.5-1.5V6.75a1.5 1.5 0 0 1 1.5-1.5Z"></path></svg>
+                    <span>{{ __('Feedback') }}</span>
+                </x-nav-link>
             </div>
-        </div>
+        @endif
+    </nav>
+
+    <div class="border-t border-mist p-4">
+        <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 transition hover:bg-snow-gray">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-snow-gray text-sm font-semibold text-ink">
+                {{ Illuminate\Support\Str::upper(Illuminate\Support\Str::substr(Auth::user()->name, 0, 1)) }}
+            </span>
+            <span class="min-w-0">
+                <span class="block truncate text-sm font-medium text-ink">{{ Auth::user()->name }}</span>
+                <span class="block truncate text-caption text-smoke">{{ Auth::user()->email }}</span>
+            </span>
+        </a>
+        <form method="POST" action="{{ route('logout') }}" class="mt-1">
+            @csrf
+            <button type="submit" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-smoke transition hover:bg-snow-gray hover:text-alert-red">
+                <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5.25H6.75A1.5 1.5 0 0 0 5.25 6.75v10.5a1.5 1.5 0 0 0 1.5 1.5H9"></path><path d="M14.25 15.75 18 12l-3.75-3.75"></path><path d="M18 12H9"></path></svg>
+                <span>{{ __('Keluar') }}</span>
+            </button>
+        </form>
     </div>
-</nav>
+</aside>
