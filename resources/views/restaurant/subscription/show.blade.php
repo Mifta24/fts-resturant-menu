@@ -85,6 +85,18 @@
 
             @if ($pendingSubscription)
                 <div class="rounded-card bg-pure-white p-6 shadow-ambient">
+                    <h2 class="mb-4 font-semibold text-ink">{{ __('Bayar via QRIS') }}</h2>
+                    <div class="flex flex-col items-center gap-3 rounded-xl border border-mist p-4 sm:flex-row sm:items-start">
+                        <img src="{{ asset('images/qris-fts.jpeg') }}" alt="QRIS Fujiyama Technology Solutions" class="h-56 w-56 shrink-0 rounded-lg border border-mist object-contain">
+                        <div class="text-sm text-smoke">
+                            <div class="font-semibold text-ink">Fujiyama Technology Solutions, Digital &amp; Kreatif</div>
+                            <div class="mt-1">NMID: ID1026564339822</div>
+                            <p class="mt-3">{{ __('Scan kode QRIS di atas menggunakan aplikasi e-wallet atau mobile banking, lalu unggah bukti pembayaran di bawah ini.') }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-card bg-pure-white p-6 shadow-ambient">
                     <h2 class="mb-4 font-semibold text-ink">{{ __('Unggah Bukti Pembayaran') }}</h2>
                     <form method="POST" action="{{ route('dashboard.subscription.upload-payment') }}" enctype="multipart/form-data" class="space-y-4">
                         @csrf
